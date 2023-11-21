@@ -1,4 +1,4 @@
-part of map_tab;
+part of google_map_tab;
 
 class AddMarkerDialog extends StatefulWidget {
   const AddMarkerDialog({

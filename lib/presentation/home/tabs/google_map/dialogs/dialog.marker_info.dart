@@ -1,4 +1,4 @@
-part of map_tab;
+part of google_map_tab;
 
 class MarkerInfoDialog extends StatefulWidget {
   const MarkerInfoDialog({
@@ -11,7 +11,7 @@ class MarkerInfoDialog extends StatefulWidget {
 
   final String id;
   final LatLng location;
-  final void Function(LatLng location) calculateRoute;
+  final Future<void> Function(LatLng location) calculateRoute;
   final void Function(String markerId) deleteMarker;
 
   void show(
@@ -134,12 +134,13 @@ class _MarkerInfoDialogState extends State<MarkerInfoDialog> {
             ),
             AppUtils.verticalSpacer(),
             ElevatedButton(
-                onPressed: () => widget.calculateRoute(widget.location),
-                child: Text(
-                  'Get Route',
-                  style: themeData.textTheme.labelLarge
-                      ?.copyWith(color: themeData.colorScheme.onPrimary),
-                )),
+              onPressed: () => widget.calculateRoute(widget.location),
+              child: Text(
+                'Get Route',
+                style: themeData.textTheme.labelLarge
+                    ?.copyWith(color: themeData.colorScheme.onPrimary),
+              ),
+            ),
             AppUtils.verticalSpacer(),
             _buildButtons(
               themeData: themeData,

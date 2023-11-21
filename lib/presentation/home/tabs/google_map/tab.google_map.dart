@@ -1,8 +1,9 @@
-library map_tab;
+library google_map_tab;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart' as pl;
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_directions_api/google_directions_api.dart';
@@ -17,20 +18,61 @@ import '../../../../../../infrastructure/utils/app.utils.dart';
 part 'dialogs/dialog.add_marker.dart';
 part 'dialogs/dialog.marker_info.dart';
 
-class MapTab extends StatefulWidget {
-  const MapTab({super.key});
+class GoogleMapsTab extends StatefulWidget {
+  const GoogleMapsTab({super.key});
 
   @override
-  State<MapTab> createState() => _MapTabState();
+  State<GoogleMapsTab> createState() => _GoogleMapsTabState();
 }
 
-class _MapTabState extends State<MapTab> with AutomaticKeepAliveClientMixin {
+class _GoogleMapsTabState extends State<GoogleMapsTab>
+    with AutomaticKeepAliveClientMixin {
   LatLng currentLocation = const LatLng(29.591768, 52.583698);
   bool isLoadingLocation = false;
 
   final Map<String, Marker> markers = {};
 
   late GoogleMapController mapController;
+
+  late pl.PolylinePoints polylinePoints;
+
+  List<LatLng> polylineCoordinates = [];
+
+  Map<PolylineId, Polyline> polylines = {};
+
+  Future<void> _createPolylines(
+    final LatLng startPoint,
+    final LatLng endPoint,
+  ) async {
+    polylinePoints = pl.PolylinePoints();
+
+    final pl.PolylineResult result =
+        await polylinePoints.getRouteBetweenCoordinates(
+      'AIzaSyCrThBeW0HO2zKkOfWDdQ2Vgq7uzdEUx04', // Google Maps API Key
+      pl.PointLatLng(startPoint.latitude, startPoint.longitude),
+      pl.PointLatLng(endPoint.latitude, endPoint.longitude),
+      travelMode: pl.TravelMode.transit,
+    );
+
+    if (result.points.isNotEmpty) {
+      for (final point in result.points) {
+        polylineCoordinates.add(LatLng(point.latitude, point.longitude));
+      }
+    }
+
+    const PolylineId id = PolylineId('route');
+
+    final Polyline polyline = Polyline(
+      polylineId: id,
+      color: Colors.red,
+      points: polylineCoordinates,
+      width: 3,
+    );
+
+    setState(() {
+      polylines[id] = polyline;
+    });
+  }
 
   Future<void> _retrieveUserLocation() async {
     final permission = await Geolocator.requestPermission();
@@ -67,7 +109,10 @@ class _MapTabState extends State<MapTab> with AutomaticKeepAliveClientMixin {
       onTap: () => MarkerInfoDialog(
         id: markerId.value,
         location: location,
-        calculateRoute: _calculateRoute,
+        calculateRoute: (final location) => _createPolylines(
+          currentLocation,
+          location,
+        ),
         deleteMarker: _deleteMarker,
       ).show(context),
       icon: icon ?? BitmapDescriptor.defaultMarker,
@@ -129,6 +174,7 @@ class _MapTabState extends State<MapTab> with AutomaticKeepAliveClientMixin {
           mapType: MapType.normal,
           mapToolbarEnabled: true,
           compassEnabled: true,
+          polylines: polylines.values.toSet(),
           tiltGesturesEnabled: true,
           onLongPress: (final location) => AddMarkerDialog(
             location: location,
