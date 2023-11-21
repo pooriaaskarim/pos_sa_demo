@@ -40,7 +40,7 @@ class AppColors {
   static const darkColorScheme = ColorScheme(
     brightness: Brightness.dark,
     primary: Color(0xFF53707C),
-    onPrimary: Color(0xFF757979),
+    onPrimary: Color(0xFFD2DCDC),
     primaryContainer: Color(0xFF004D61),
     onPrimaryContainer: Color(0xFFB8EAFF),
     secondary: Color(0xFFB3CAD4),

@@ -1,4 +1,7 @@
-part of home;
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../../application/app_bloc/app_bloc.dart';
 
 extension ThemeModeExtension on ThemeMode {
   IconData get icon {

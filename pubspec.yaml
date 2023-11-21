@@ -1,5 +1,5 @@
 name: pos_sa_demo
-description: "A new Flutter project."
+description: "Pos Sa Demonstration"
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
@@ -32,6 +32,8 @@ dependencies:
   geolocator: ^10.1.0
   google_directions_api: ^0.9.1
   geocoding: ^2.1.1
+  flutter_polyline_points: ^1.0.0
+  flutter_map: ^4.0.0
   awesome_notifications: ^0.8.2
 
 dev_dependencies:
